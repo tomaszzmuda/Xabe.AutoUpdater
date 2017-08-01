@@ -4,23 +4,26 @@ using System.Linq;
 
 namespace Xabe.AutoUpdater
 {
-    public class Updater<T> where T : IUpdate, new()
+    public class Updater
     {
-        private readonly T _updater;
+        private readonly IUpdate _updater;
 
-        public Updater()
+        public Updater(IUpdate updater)
         {
-            _updater = new T();
+            _updater = updater;
         }
 
-        public bool CheckForUpdate()
+        public async Task<bool> CheckForUpdate()
         {
-            return true;
+            var currentVersion = new Version(await _updater.GetCurrentVersion());
+            var installedVersion = new Version(await _updater.GetInstalledVersion());
+            return currentVersion > installedVersion;
         }
 
         public void Update()
         {
-            var files = _updater.DownloadCurrentVersion();
+            var files = _updater.DownloadCurrentVersion()
+                                .Result;
             var outputDir = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()
                                                         .Location);
 
