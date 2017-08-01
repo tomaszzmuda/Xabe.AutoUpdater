@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26711.1
+VisualStudioVersion = 15.0.26724.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xabe.AutoUpdater", "Xabe.AutoUpdater\Xabe.AutoUpdater.csproj", "{0AACEBC2-A1F6-42A8-9A9F-D8E1D8B520B4}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xabe.AutoUpdater.Tests", "..\Xabe.AutoUpdater.Tests\Xabe.AutoUpdater.Tests.csproj", "{834564E7-0B82-4B5A-8AE9-50AA8FD5A290}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xabe.AutoUpdater", "Xabe.AutoUpdater\Xabe.AutoUpdater.csproj", "{0AACEBC2-A1F6-42A8-9A9F-D8E1D8B520B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +15,6 @@ Global
 		{0AACEBC2-A1F6-42A8-9A9F-D8E1D8B520B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0AACEBC2-A1F6-42A8-9A9F-D8E1D8B520B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0AACEBC2-A1F6-42A8-9A9F-D8E1D8B520B4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{834564E7-0B82-4B5A-8AE9-50AA8FD5A290}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{834564E7-0B82-4B5A-8AE9-50AA8FD5A290}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{834564E7-0B82-4B5A-8AE9-50AA8FD5A290}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{834564E7-0B82-4B5A-8AE9-50AA8FD5A290}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
