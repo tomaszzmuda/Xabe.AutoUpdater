@@ -1,28 +1,55 @@
 ﻿using System;
 using System.IO;
-using System.Net;
+using System.Linq;
 
 namespace Xabe.AutoUpdater
 {
-    public class Updater
+    public class Updater<T> where T : IUpdate, new()
     {
-        private readonly string _url;
+        private readonly T _updater;
 
-        public Updater(string url)
+        public Updater()
         {
-            _url = url;
+            _updater = new T();
         }
 
-        public void Get()
+        public bool CheckForUpdate()
         {
-            string fileName = Path.GetTempFileName();
-            using(var client = new WebClient())
+            return true;
+        }
+
+        public void Update()
+        {
+            var files = _updater.DownloadCurrentVersion();
+            var outputDir = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()
+                                                        .Location);
+
+            var fileNames = files.Select(Path.GetFileName);
+
+            foreach(var fileName in fileNames)
             {
-                client.DownloadFile(_url, fileName);
+                var path = Path.Combine(outputDir, fileName);
+                if(File.Exists(path))
+                {
+                    try
+                    {
+                        var tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid()
+                                                                            .ToString());
+                        File.Move(path, tempPath);
+                    }
+                    catch(FileNotFoundException)
+                    {
+                    }
+                }
             }
 
-            string tmpDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            System.IO.Compression.ZipFile.ExtractToDirectory(fileName, tmpDir);
+            foreach(var file in files)
+            {
+                var outputPath = Path.Combine(outputDir, Path.GetFileName(file));
+                File.Copy(file, outputPath);
+            }
+
+            _updater.RestartApp();
         }
     }
 }
