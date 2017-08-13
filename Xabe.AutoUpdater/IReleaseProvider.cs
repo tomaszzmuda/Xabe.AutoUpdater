@@ -3,11 +3,9 @@ using System.Threading.Tasks;
 
 namespace Xabe.AutoUpdater
 {
-    public interface IUpdate
+    public interface IReleaseProvider
     {
-        Task<string> GetCurrentVersion();
-        Task<string> GetInstalledVersion();
+        Task<string> GetLatestVersionNumber();
         Task<List<string>> DownloadCurrentVersion();
-        void RestartApp();
     }
 }
