@@ -14,6 +14,12 @@ namespace Xabe.AutoUpdater
         private readonly string _repositoryOwner;
         private readonly string _repositoryName;
 
+        /// <summary>
+        ///     Create instance of GithubProvider. 
+        /// </summary>
+        /// <param name="appName">Name of current application.</param>
+        /// <param name="repositoryOwner">Github repository owner</param>
+        /// <param name="repositoryName">Github repository name</param>
         public GithubProvider(string appName, string repositoryOwner, string repositoryName)
         {
             _appName = appName; 
@@ -21,6 +27,7 @@ namespace Xabe.AutoUpdater
             _repositoryName = repositoryName;
         }
 
+        /// <inheritdoc />
         public async Task<List<string>> DownloadCurrentVersion()
         {
             var client = new GitHubClient(new ProductHeaderValue(_appName));
@@ -39,6 +46,7 @@ namespace Xabe.AutoUpdater
             return Directory.GetFiles(outputDir, "*", SearchOption.AllDirectories).ToList();
         }
 
+        /// <inheritdoc />
         public async Task<string> GetLatestVersionNumber()
         {
             var client = new GitHubClient(new ProductHeaderValue(_appName));

@@ -12,8 +12,20 @@ namespace Xabe.AutoUpdater
     {
         private readonly IVersionChecker _versionChecker;
         private readonly IReleaseProvider _releaseProvider;
+
+        /// <summary>
+        ///     List of all downloaded files
+        /// </summary>
         public List<string> DownloadedFiles;
+
+        /// <summary>
+        ///     Occurs before Update
+        /// </summary>
         public event EventHandler Updating;
+
+        /// <summary>
+        ///     Occurs before restart
+        /// </summary>
         public event EventHandler Restarting;
 
         public Updater(IVersionChecker versionChecker, IReleaseProvider releaseProvider)
