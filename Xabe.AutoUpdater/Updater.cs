@@ -21,6 +21,12 @@ namespace Xabe.AutoUpdater
         /// <inheritdoc />
         public event EventHandler Restarting;
 
+        /// <inheritdoc />
+        public event VersionEventHandler CheckedInstalledVersionNumber;
+
+        /// <inheritdoc />
+        public event VersionEventHandler CheckedLatestVersionNumber;
+
         /// <summary>
         ///     Create instance of Updater with specific version checking options and provider
         /// </summary>
@@ -35,9 +41,11 @@ namespace Xabe.AutoUpdater
         /// <inheritdoc />
         public async Task<bool> IsUpdateAvaiable()
         {
-            var currentVersion = new Version(await _releaseProvider.GetLatestVersionNumber());
+            var latestVersion = new Version(await _releaseProvider.GetLatestVersionNumber());
+            CheckedLatestVersionNumber(this, latestVersion);
             var installedVersion = new Version(await _versionChecker.GetInstalledVersionNumber());
-            return currentVersion > installedVersion;
+            CheckedInstalledVersionNumber(this, installedVersion);
+            return latestVersion > installedVersion;
         }
 
         /// <inheritdoc />
@@ -101,4 +109,6 @@ namespace Xabe.AutoUpdater
             Environment.Exit(0);
         }
     }
+
+    
 }

@@ -4,6 +4,14 @@ using System.Threading.Tasks;
 
 namespace Xabe.AutoUpdater
 {
+    /// <summary>
+    ///     Version event handler
+    /// </summary>
+    /// <param name="sender">Object raised event</param>
+    /// <param name="version">Version</param>
+    /// <returns></returns>
+    public delegate void VersionEventHandler(object sender, Version version);
+
     public interface IUpdater
     {
         /// <summary>
@@ -20,6 +28,16 @@ namespace Xabe.AutoUpdater
         ///     Occurs before restart
         /// </summary>
         event EventHandler Restarting;
+
+        /// <summary>
+        ///     Occurs after checked current version number
+        /// </summary>
+        event VersionEventHandler CheckedInstalledVersionNumber;
+
+        /// <summary>
+        ///     Occurs after check latest version number
+        /// </summary>
+        event VersionEventHandler CheckedLatestVersionNumber;
 
         /// <summary>
         ///     Tells about avaiable updates.
