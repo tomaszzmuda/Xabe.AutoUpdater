@@ -8,6 +8,9 @@ using Octokit;
 
 namespace Xabe.AutoUpdater
 {
+    /// <summary>
+    ///     Provider for GitHubReleases
+    /// </summary>
     public class GithubProvider : IReleaseProvider
     {
         private readonly string _appName;

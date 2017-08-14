@@ -8,6 +8,7 @@ namespace Xabe.AutoUpdater
 {
     public class AssemblyVersionChecker : IVersionChecker
     {
+        /// <inheritdoc />
         public async Task<string> GetInstalledVersionNumber()
         {
             Version version = Assembly.GetEntryAssembly()

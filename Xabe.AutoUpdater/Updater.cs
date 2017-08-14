@@ -3,37 +3,36 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net.Mime;
 using System.Threading.Tasks;
 
 namespace Xabe.AutoUpdater
 {
-    public class Updater
+    public class Updater : IUpdater
     {
         private readonly IVersionChecker _versionChecker;
         private readonly IReleaseProvider _releaseProvider;
 
-        /// <summary>
-        ///     List of all downloaded files
-        /// </summary>
-        public List<string> DownloadedFiles;
+        /// <inheritdoc />
+        public List<string> DownloadedFiles { get; set; }
 
-        /// <summary>
-        ///     Occurs before Update
-        /// </summary>
+        /// <inheritdoc />
         public event EventHandler Updating;
 
-        /// <summary>
-        ///     Occurs before restart
-        /// </summary>
+        /// <inheritdoc />
         public event EventHandler Restarting;
 
+        /// <summary>
+        ///     Create instance of Updater with specific version checking options and provider
+        /// </summary>
+        /// <param name="versionChecker">Version checker</param>
+        /// <param name="releaseProvider">Release provider</param>
         public Updater(IVersionChecker versionChecker, IReleaseProvider releaseProvider)
         {
             _versionChecker = versionChecker;
             _releaseProvider = releaseProvider;
         }
 
+        /// <inheritdoc />
         public async Task<bool> IsUpdateAvaiable()
         {
             var currentVersion = new Version(await _releaseProvider.GetLatestVersionNumber());
@@ -41,6 +40,7 @@ namespace Xabe.AutoUpdater
             return currentVersion > installedVersion;
         }
 
+        /// <inheritdoc />
         public void Update()
         {
             Updating(this, null);
@@ -56,7 +56,7 @@ namespace Xabe.AutoUpdater
             RestartApp();
         }
 
-        private static void MoveFiles(System.Collections.Generic.List<string> files, string outputDir, System.Collections.Generic.IEnumerable<string> fileNames)
+        private void MoveFiles(List<string> files, string outputDir, IEnumerable<string> fileNames)
         {
             foreach (var fileName in fileNames)
             {
@@ -82,7 +82,8 @@ namespace Xabe.AutoUpdater
             }
         }
 
-        private void RestartApp()
+        /// <inheritdoc />
+        public void RestartApp()
         {
             Restarting(this, null);
             var args = Environment.GetCommandLineArgs();
