@@ -31,147 +31,125 @@ namespace Xabe.AutoUpdater
         /* Download File */
         public void Download(string remoteFile, string localFile)
         {
-            try
+            /* Create an FTP Request */
+            _ftpRequest = (FtpWebRequest)WebRequest.Create(Host + "/" + remoteFile);
+
+            /* Log in to the FTP Server with the User Name and Password Provided */
+            _ftpRequest.Credentials = new NetworkCredential(User, Pass);
+
+            /* When in doubt, use these options */
+            _ftpRequest.UseBinary = true;
+            _ftpRequest.UsePassive = Passive;
+            _ftpRequest.KeepAlive = KeepAlive;
+
+            /* Specify the Type of FTP Request */
+            _ftpRequest.Method = WebRequestMethods.Ftp.DownloadFile;
+
+            /* Establish Return Communication with the FTP Server */
+            _ftpResponse = (FtpWebResponse)_ftpRequest.GetResponse();
+
+            /* Get the FTP Server's Response Stream */
+            _ftpStream = _ftpResponse.GetResponseStream();
+
+            /* Open a File Stream to Write the Downloaded File */
+            FileStream localFileStream = new FileStream(localFile, FileMode.Create);
+
+            /* Buffer for the Downloaded Data */
+            byte[] byteBuffer = new byte[_bufferSize];
+            int bytesRead = _ftpStream.Read(byteBuffer, 0, _bufferSize);
+
+            /* Download the File by Writing the Buffered Data Until the Transfer is Complete */
+            while (bytesRead > 0)
             {
-                /* Create an FTP Request */
-                _ftpRequest = (FtpWebRequest)WebRequest.Create(Host + "/" + remoteFile);
-
-                /* Log in to the FTP Server with the User Name and Password Provided */
-                _ftpRequest.Credentials = new NetworkCredential(User, Pass);
-
-                /* When in doubt, use these options */
-                _ftpRequest.UseBinary = true;
-                _ftpRequest.UsePassive = Passive;
-                _ftpRequest.KeepAlive = KeepAlive;
-
-                /* Specify the Type of FTP Request */
-                _ftpRequest.Method = WebRequestMethods.Ftp.DownloadFile;
-
-                /* Establish Return Communication with the FTP Server */
-                _ftpResponse = (FtpWebResponse)_ftpRequest.GetResponse();
-
-                /* Get the FTP Server's Response Stream */
-                _ftpStream = _ftpResponse.GetResponseStream();
-
-                /* Open a File Stream to Write the Downloaded File */
-                FileStream localFileStream = new FileStream(localFile, FileMode.Create);
-
-                /* Buffer for the Downloaded Data */
-                byte[] byteBuffer = new byte[_bufferSize];
-                int bytesRead = _ftpStream.Read(byteBuffer, 0, _bufferSize);
-
-                /* Download the File by Writing the Buffered Data Until the Transfer is Complete */
-                while (bytesRead > 0)
-                {
-                    localFileStream.Write(byteBuffer, 0, bytesRead);
-                    bytesRead = _ftpStream.Read(byteBuffer, 0, _bufferSize);
-                }
-
-                /* Resource Cleanup */
-                localFileStream.Close();
-                _ftpStream.Close();
-                _ftpResponse.Close();
-                _ftpRequest = null;
+                localFileStream.Write(byteBuffer, 0, bytesRead);
+                bytesRead = _ftpStream.Read(byteBuffer, 0, _bufferSize);
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
+
+            /* Resource Cleanup */
+            localFileStream.Close();
+            _ftpStream.Close();
+            _ftpResponse.Close();
+            _ftpRequest = null;
         }
 
         /* Upload File */
         public void Upload(string remoteFile, string localFile)
         {
-            try
+            /* Create an FTP Request */
+            _ftpRequest = (FtpWebRequest)WebRequest.Create(Host + "/" + remoteFile);
+
+            /* Log in to the FTP Server with the User Name and Password Provided */
+            _ftpRequest.Credentials = new NetworkCredential(User, Pass);
+
+            /* When in doubt, use these options */
+            _ftpRequest.UseBinary = true;
+            _ftpRequest.UsePassive = Passive;
+            _ftpRequest.KeepAlive = KeepAlive;
+
+            /* Specify the Type of FTP Request */
+            _ftpRequest.Method = WebRequestMethods.Ftp.UploadFile;
+
+            /* Establish Return Communication with the FTP Server */
+            _ftpStream = _ftpRequest.GetRequestStream();
+
+            /* Open a File Stream to Read the File for Upload */
+            FileStream localFileStream = new FileStream(localFile, FileMode.Create);
+
+            /* Buffer for the Downloaded Data */
+            byte[] byteBuffer = new byte[_bufferSize];
+            int bytesSent = localFileStream.Read(byteBuffer, 0, _bufferSize);
+
+            /* Upload the File by Sending the Buffered Data Until the Transfer is Complete */
+            while (bytesSent != 0)
             {
-                /* Create an FTP Request */
-                _ftpRequest = (FtpWebRequest)WebRequest.Create(Host + "/" + remoteFile);
-
-                /* Log in to the FTP Server with the User Name and Password Provided */
-                _ftpRequest.Credentials = new NetworkCredential(User, Pass);
-
-                /* When in doubt, use these options */
-                _ftpRequest.UseBinary = true;
-                _ftpRequest.UsePassive = Passive;
-                _ftpRequest.KeepAlive = KeepAlive;
-
-                /* Specify the Type of FTP Request */
-                _ftpRequest.Method = WebRequestMethods.Ftp.UploadFile;
-
-                /* Establish Return Communication with the FTP Server */
-                _ftpStream = _ftpRequest.GetRequestStream();
-
-                /* Open a File Stream to Read the File for Upload */
-                FileStream localFileStream = new FileStream(localFile, FileMode.Create);
-
-                /* Buffer for the Downloaded Data */
-                byte[] byteBuffer = new byte[_bufferSize];
-                int bytesSent = localFileStream.Read(byteBuffer, 0, _bufferSize);
-
-                /* Upload the File by Sending the Buffered Data Until the Transfer is Complete */
-                while (bytesSent != 0)
-                {
-                    _ftpStream.Write(byteBuffer, 0, bytesSent);
-                    bytesSent = localFileStream.Read(byteBuffer, 0, _bufferSize);
-                }
-                /* Resource Cleanup */
-                localFileStream.Close();
-                _ftpStream.Close();
-                _ftpRequest = null;
-
+                _ftpStream.Write(byteBuffer, 0, bytesSent);
+                bytesSent = localFileStream.Read(byteBuffer, 0, _bufferSize);
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
+            /* Resource Cleanup */
+            localFileStream.Close();
+            _ftpStream.Close();
+            _ftpRequest = null;
         }
 
         /* Upload File */
         public void UploadByteArray(string remoteFile, Byte[] byteArray)
         {
-            try
+            /* Create an FTP Request */
+            _ftpRequest = (FtpWebRequest)WebRequest.Create(Host + "/" + remoteFile);
+
+            /* Log in to the FTP Server with the User Name and Password Provided */
+            _ftpRequest.Credentials = new NetworkCredential(User, Pass);
+
+            /* When in doubt, use these options */
+            _ftpRequest.UseBinary = true;
+            _ftpRequest.UsePassive = Passive;
+            _ftpRequest.KeepAlive = KeepAlive;
+
+            /* Specify the Type of FTP Request */
+            _ftpRequest.Method = WebRequestMethods.Ftp.UploadFile;
+
+            /* Establish Return Communication with the FTP Server */
+            _ftpStream = _ftpRequest.GetRequestStream();
+
+            /* Open a File Stream to Read the File for Upload */
+            Stream localFileStream = new MemoryStream(byteArray);
+
+            //FileStream localFileStream = new FileStream(new File, FileMode.Create);
+            /* Buffer for the Downloaded Data */
+            byte[] byteBuffer = new byte[_bufferSize];
+            int bytesSent = localFileStream.Read(byteBuffer, 0, _bufferSize);
+
+            /* Upload the File by Sending the Buffered Data Until the Transfer is Complete */
+            while (bytesSent != 0)
             {
-                /* Create an FTP Request */
-                _ftpRequest = (FtpWebRequest)WebRequest.Create(Host + "/" + remoteFile);
-
-                /* Log in to the FTP Server with the User Name and Password Provided */
-                _ftpRequest.Credentials = new NetworkCredential(User, Pass);
-
-                /* When in doubt, use these options */
-                _ftpRequest.UseBinary = true;
-                _ftpRequest.UsePassive = Passive;
-                _ftpRequest.KeepAlive = KeepAlive;
-
-                /* Specify the Type of FTP Request */
-                _ftpRequest.Method = WebRequestMethods.Ftp.UploadFile;
-
-                /* Establish Return Communication with the FTP Server */
-                _ftpStream = _ftpRequest.GetRequestStream();
-
-                /* Open a File Stream to Read the File for Upload */
-                Stream localFileStream = new MemoryStream(byteArray);
-
-                //FileStream localFileStream = new FileStream(new File, FileMode.Create);
-                /* Buffer for the Downloaded Data */
-                byte[] byteBuffer = new byte[_bufferSize];
-                int bytesSent = localFileStream.Read(byteBuffer, 0, _bufferSize);
-
-                /* Upload the File by Sending the Buffered Data Until the Transfer is Complete */
-                while (bytesSent != 0)
-                {
-                    _ftpStream.Write(byteBuffer, 0, bytesSent);
-                    bytesSent = localFileStream.Read(byteBuffer, 0, _bufferSize);
-                }
-
-                /* Resource Cleanup */
-                localFileStream.Close();
-                _ftpStream.Close();
-                _ftpRequest = null;
+                _ftpStream.Write(byteBuffer, 0, bytesSent);
+                bytesSent = localFileStream.Read(byteBuffer, 0, _bufferSize);
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
+
+            /* Resource Cleanup */
+            localFileStream.Close();
+            _ftpStream.Close();
+            _ftpRequest = null;
         }
 
         /* Delete File */
