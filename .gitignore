@@ -6,3 +6,5 @@
 /Xabe.AutoUpdater/bin/Debug/netcoreapp2.0
 /.vs/Xabe.AutoUpdater/v15/sqlite3
 /.vs
+/Xabe.AutoUpdater.Test/obj
+/Xabe.AutoUpdater.Test/bin/Debug/netcoreapp2.0
