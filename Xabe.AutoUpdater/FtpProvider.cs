@@ -46,39 +46,51 @@ namespace Xabe.AutoUpdater
         /// <inheritdoc />
         public async Task<List<string>> DownloadCurrentVersion()
         {
-            return await Task.Run(async () =>
-            {
-                List<string> lstFiles = new List<string>();
-                var client = BuildClient();
-                var latestVersion = await GetLatestVersionNumber();
-                if (latestVersion == "0.0.0.0") return lstFiles;
-                var remoteFile = Path.Combine(_ftpFolder, $"{latestVersion}.zip");
-                var tempFile = Path.GetTempFileName();
-                client.Download(remoteFile, tempFile);
-                if (!File.Exists(tempFile)) return lstFiles;
-                var outputDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-                ZipFile.ExtractToDirectory(tempFile, outputDir);
-                lstFiles = Directory.GetFiles(outputDir, "*", SearchOption.AllDirectories)
-                    .ToList();
+            var lstFiles = new List<string>();
+            var client = BuildClient();
+            var latestVersion = await GetLatestVersionNumber();
+            if (string.IsNullOrEmpty(latestVersion) || latestVersion == "0.0.0.0")
                 return lstFiles;
-            });
+            
+            var remoteFilenames = client.DirectoryListSimple(_ftpFolder);
+            if (!remoteFilenames.Any())
+                return lstFiles;
+
+            var tempFile = Path.GetTempFileName();
+            var remoteFile = remoteFilenames.FirstOrDefault(p=> p.Contains(latestVersion));
+            client.Download(Path.Combine(_ftpFolder, remoteFile), tempFile);
+            if (!File.Exists(tempFile))
+                return lstFiles;
+            var outputDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            ZipFile.ExtractToDirectory(tempFile, outputDir);
+            lstFiles = Directory.GetFiles(outputDir, "*", SearchOption.AllDirectories)
+                .ToList();
+            return lstFiles;
         }
 
         /// <inheritdoc />
         public async Task<string> GetLatestVersionNumber()
         {
-            return await Task.Run(() =>
-            {
-                string version = "0.0.0.0";
-                var client = BuildClient();
-                var remoteDirList = client.DirectoryListSimple(_ftpFolder);
-                if (!remoteDirList.Any())
-                    return version;
+            string version = "0.0.0.0";
+            var client = BuildClient();
+            var remoteFilenames = client.DirectoryListSimple(_ftpFolder);
+            if (!remoteFilenames.Any())
+                return version;
 
-                var lastestVersionFile = remoteDirList.Where(w => !string.IsNullOrEmpty(w)).OrderBy(x =>  new Version(Path.GetFileNameWithoutExtension(x))).Max();
-                if (lastestVersionFile == null) return version;
-                return Path.GetFileNameWithoutExtension(lastestVersionFile);
-            });
+            string[] versions = remoteFilenames
+                .Select(fileName =>
+                    Path.GetFileNameWithoutExtension(fileName).Split('_')
+                        .Last()
+                        .Reverse()
+                        .TakeWhile(c => c == '.' || char.IsDigit(c))
+                        .Reverse()
+                ).Select(chars => new string(chars.ToArray())).ToArray();
+
+            version = versions.OrderBy(p => p).Last();
+            if (version.StartsWith("."))
+                return version.Substring(1);
+
+            return version;
         }
 
         private FtpClient BuildClient()
